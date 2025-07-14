@@ -15,6 +15,11 @@ Namespace Entities.OrderAggregate
             ' required by EF
         End Sub
 
+
+        ' Add this new constructor
+        Public Sub New(buyerId As String, shipToAddress As Address)
+            Me.New(buyerId, shipToAddress, New List(Of OrderItem)())
+        End Sub
         Public Sub New(buyerId As String, shipToAddress As Address, items As List(Of OrderItem))
             Guard.Against.NullOrEmpty(buyerId, NameOf(buyerId))
             Guard.Against.Null(shipToAddress, NameOf(shipToAddress))
@@ -37,7 +42,7 @@ Namespace Entities.OrderAggregate
             Get
                 Return _OrderDate
             End Get
-            Private Set
+            Set
                 _OrderDate = Value
             End Set
         End Property

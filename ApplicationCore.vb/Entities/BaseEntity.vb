@@ -12,7 +12,7 @@ Namespace Entities
             Get
                 Return _Id
             End Get
-            Protected Set(value As Integer)
+            Set(value As Integer)
                 _Id = value
             End Set
         End Property
