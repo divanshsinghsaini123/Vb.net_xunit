@@ -110,6 +110,7 @@ Namespace Controllers
             Return RedirectToAction(NameOf(Index))
         End Function
 
+
         <HttpGet>
         Public Async Function ChangePassword() As Task(Of IActionResult)
             Dim _user = Await _userManager.GetUserAsync(User)
