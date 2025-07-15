@@ -93,7 +93,7 @@ Namespace Controllers
         <ValidateAntiForgeryToken>
         Public Async Function SendVerificationEmail(ByVal model As IndexViewModel) As Task(Of IActionResult)
             If Not ModelState.IsValid Then
-                Return View(model)
+                Return View("SendVerificationEmail", model)
             End If
 
             Dim _user = Await _userManager.GetUserAsync(User)
@@ -298,7 +298,7 @@ Namespace Controllers
             End If
 
             If Not _user.TwoFactorEnabled Then
-                Throw New ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{_user.Id}'.")
+                Throw New ApplicationException($"Cannot disable 2FA")
             End If
 
             Return View(NameOf(Disable2fa))
@@ -395,7 +395,7 @@ Namespace Controllers
         Public Async Function GenerateRecoveryCodes() As Task(Of IActionResult)
             Dim _user = Await _userManager.GetUserAsync(User)
 
-            If User Is Nothing Then
+            If _user Is Nothing Then
                 Throw New ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.")
             End If
 
