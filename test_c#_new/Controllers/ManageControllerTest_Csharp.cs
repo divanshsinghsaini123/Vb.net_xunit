@@ -450,7 +450,7 @@ namespace test_c__new.Controllers
                     .ReturnsAsync(_testUser);
                 _mockUserManager.Setup(m => m.ChangePasswordAsync(_testUser, model.OldPassword, model.NewPassword))
                     .ReturnsAsync(IdentityResult.Success);
-                _mockSignInManager.Setup(m => m.RefreshSignInAsync(_testUser))
+                _mockSignInManager.Setup(m => m.SignInAsync(_testUser, false, null))
                     .Returns(Task.CompletedTask);
 
                 // Act
@@ -460,7 +460,7 @@ namespace test_c__new.Controllers
                 var redirectResult = Assert.IsType<RedirectToActionResult>(result);
                 Assert.Equal("ChangePassword", redirectResult.ActionName);
                 _mockUserManager.Verify(m => m.ChangePasswordAsync(_testUser, model.OldPassword, model.NewPassword), Times.Once);
-                _mockSignInManager.Verify(m => m.RefreshSignInAsync(_testUser), Times.Once);
+                _mockSignInManager.Verify(m => m.SignInAsync(_testUser, false, null), Times.Once);
             }
 
             [Fact]
@@ -576,8 +576,8 @@ namespace test_c__new.Controllers
                     .ReturnsAsync(_testUser);
                 _mockUserManager.Setup(m => m.AddPasswordAsync(_testUser, model.NewPassword))
                     .ReturnsAsync(IdentityResult.Success);
-                _mockSignInManager.Setup(m => m.RefreshSignInAsync(_testUser))
-                    .Returns(Task.CompletedTask);
+                _mockSignInManager.Setup(m => m.SignInAsync(_testUser, false, null))
+                        .Returns(Task.CompletedTask);
 
                 // Act
                 var result = await _controller.SetPassword(model);
@@ -586,7 +586,7 @@ namespace test_c__new.Controllers
                 var redirectResult = Assert.IsType<RedirectToActionResult>(result);
                 Assert.Equal("SetPassword", redirectResult.ActionName);
                 _mockUserManager.Verify(m => m.AddPasswordAsync(_testUser, model.NewPassword), Times.Once);
-                _mockSignInManager.Verify(m => m.RefreshSignInAsync(_testUser), Times.Once);
+                _mockSignInManager.Verify(m => m.SignInAsync(_testUser, false, null), Times.Once);
             }
 
             [Fact]
@@ -700,7 +700,7 @@ namespace test_c__new.Controllers
                 // Act & Assert
                 var exception = await Assert.ThrowsAsync<ApplicationException>(
                     () => _controller.LinkLoginCallback());
-                Assert.Contains("Error loading external login information", exception.Message);
+                Assert.Contains("Unexpected error occurred loading external login info for _user with ID ", exception.Message);
             }
 
             [Fact]
@@ -737,8 +737,8 @@ namespace test_c__new.Controllers
                     .ReturnsAsync(_testUser);
                 _mockUserManager.Setup(m => m.RemoveLoginAsync(_testUser, model.LoginProvider, model.ProviderKey))
                     .ReturnsAsync(IdentityResult.Success);
-                _mockSignInManager.Setup(m => m.RefreshSignInAsync(_testUser))
-                    .Returns(Task.CompletedTask);
+                _mockSignInManager.Setup(m => m.SignInAsync(_testUser, false, null))
+    .Returns(Task.CompletedTask);
 
                 // Act
                 var result = await _controller.RemoveLogin(model);
@@ -747,7 +747,7 @@ namespace test_c__new.Controllers
                 var redirectResult = Assert.IsType<RedirectToActionResult>(result);
                 Assert.Equal("ExternalLogins", redirectResult.ActionName);
                 _mockUserManager.Verify(m => m.RemoveLoginAsync(_testUser, model.LoginProvider, model.ProviderKey), Times.Once);
-                _mockSignInManager.Verify(m => m.RefreshSignInAsync(_testUser), Times.Once);
+                _mockSignInManager.Verify(m => m.SignInAsync(_testUser, false, null), Times.Once);
             }
 
             [Fact]

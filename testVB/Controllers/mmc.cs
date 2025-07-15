@@ -157,7 +157,7 @@ namespace Microsoft.eShopWeb.Web.Tests.Controllers
                 .ReturnsAsync(testUser);
             _mockUserManager.Setup(x => x.SetEmailAsync(testUser, model.Email))
                 .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Email error" }));
-
+            
             // Act & Assert
             var ex = await Assert.ThrowsAsync<ApplicationException>(() => _controller.Index(model));
             Assert.Contains("Unexpected error occurred setting email for user with ID 'user1'", ex.Message);
