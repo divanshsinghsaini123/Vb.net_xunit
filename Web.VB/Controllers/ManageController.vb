@@ -220,31 +220,6 @@ Namespace Controllers
         End Function
 
 
-        <HttpGet>
-        Public Async Function LinkLoginCallback() As Task(Of IActionResult)
-            Dim _user = Await _userManager.GetUserAsync(User)
-
-
-            If _user Is Nothing Then
-                Throw New ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.")
-            End If
-
-            Dim info = Await _signInManager.GetExternalLoginInfoAsync(_user.Id)
-
-            If info Is Nothing Then
-                Throw New ApplicationException($"Unexpected error occurred loading external login info for _user with ID '{_user.Id}'.")
-            End If
-
-            Dim result = Await _userManager.AddLoginAsync(_user, info)
-
-            If Not result.Succeeded Then
-                Throw New ApplicationException($"Unexpected error occurred adding external login for user with ID '{_user.Id}'.")
-            End If
-
-            Await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme)
-            StatusMessage = "The external login was added."
-            Return RedirectToAction(NameOf(ExternalLogins))
-        End Function
 
         <HttpPost>
         <ValidateAntiForgeryToken>

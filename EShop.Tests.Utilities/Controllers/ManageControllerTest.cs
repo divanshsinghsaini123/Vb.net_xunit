@@ -667,66 +667,9 @@ namespace Microsoft.eShopWeb.UnitTests.Web.Controllers
                 Assert.Single(model.OtherLogins); // Facebook should be the only "other" login
             }
 
-        [Fact]
-        public async Task LinkLoginCallback_AddsLogin_WhenValid()
-        {
-            // Arrange
-            var userId = "test-user-id"; // Match this with your test user
-            var externalLoginInfo = new ExternalLoginInfo(
-                _testPrincipal, "Google", "google-key", "Google");
+           
 
-            _mockUserManager.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync(_testUser);
 
-            // Fix: Mock GetExternalLoginInfoAsync with the exact userId expected
-            _mockSignInManager.Setup(m => m.GetExternalLoginInfoAsync(userId))
-                .ReturnsAsync(externalLoginInfo);
-
-            _mockUserManager.Setup(m => m.AddLoginAsync(_testUser, externalLoginInfo))
-                .ReturnsAsync(IdentityResult.Success);
-
-            // Act
-            var result = await _controller.LinkLoginCallback();
-
-            // Assert
-            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("ExternalLogins", redirectResult.ActionName);
-            _mockUserManager.Verify(m => m.AddLoginAsync(_testUser, externalLoginInfo), Times.Once);
-        }
-        [Fact]
-            public async Task LinkLoginCallback_ThrowsException_WhenNoExternalLoginInfo()
-            {
-                // Arrange
-                _mockUserManager.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                    .ReturnsAsync(_testUser);
-                _mockSignInManager.Setup(m => m.GetExternalLoginInfoAsync(It.IsAny<string>()))
-                    .ReturnsAsync((ExternalLoginInfo)null);
-
-                // Act & Assert
-                var exception = await Assert.ThrowsAsync<ApplicationException>(
-                    () => _controller.LinkLoginCallback());
-                Assert.Contains("Unexpected error occurred loading external login info for _user with ID ", exception.Message);
-            }
-
-            [Fact]
-            public async Task LinkLoginCallback_ThrowsException_WhenAddLoginFails()
-            {
-                // Arrange
-                var externalLoginInfo = new ExternalLoginInfo(
-                    _testPrincipal, "Google", "google-key", "Google");
-
-                _mockUserManager.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                    .ReturnsAsync(_testUser);
-                _mockSignInManager.Setup(m => m.GetExternalLoginInfoAsync(It.IsAny<string>()))
-                    .ReturnsAsync(externalLoginInfo);
-                _mockUserManager.Setup(m => m.AddLoginAsync(_testUser, externalLoginInfo))
-                    .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Add login failed" }));
-
-                // Act & Assert
-                var exception = await Assert.ThrowsAsync<ApplicationException>(
-                    () => _controller.LinkLoginCallback());
-                Assert.Contains("Unexpected error", exception.Message);
-            }
 
             [Fact]
             public async Task RemoveLogin_RemovesLogin_WhenValid()
@@ -783,14 +726,14 @@ namespace Microsoft.eShopWeb.UnitTests.Web.Controllers
             [Fact]
             public async Task TwoFactorAuthentication_ReturnsView_WithCorrectModel()
             {
-                // Arrange
                 var _tempuser = _testUser;
-                _tempuser.TwoFactorEnabled = true ; // Ensure 2FA is disabled initially
+                _tempuser.TwoFactorEnabled = true;
+            // Arrange
             _mockUserManager.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                    .ReturnsAsync(_testUser);
-                _mockUserManager.Setup(m => m.GetTwoFactorEnabledAsync(_testUser))
+                    .ReturnsAsync(_tempuser);
+                _mockUserManager.Setup(m => m.GetTwoFactorEnabledAsync(_tempuser))
                     .ReturnsAsync(true);
-                _mockUserManager.Setup(m => m.CountRecoveryCodesAsync(_testUser))
+                _mockUserManager.Setup(m => m.CountRecoveryCodesAsync(_tempuser))
                     .ReturnsAsync(5);
 
                 // Act
@@ -800,7 +743,7 @@ namespace Microsoft.eShopWeb.UnitTests.Web.Controllers
                 var viewResult = Assert.IsType<ViewResult>(result);
                 var model = Assert.IsType<TwoFactorAuthenticationViewModel>(viewResult.Model);
                 Assert.True(model.Is2faEnabled);
-            Assert.Equal(5, model.RecoveryCodesLeft);
+                Assert.Equal(5, model.RecoveryCodesLeft);
             }
 
             [Fact]
@@ -1537,8 +1480,7 @@ namespace Microsoft.eShopWeb.UnitTests.Web.Controllers
                 Assert.True(model.ShowRemoveButton);
             }
 
-            
-
+          
             [Fact]
             public async Task RemoveLogin_RemovesLogin_WhenValid_IntegrationTest()
             {
@@ -1744,50 +1686,8 @@ namespace Microsoft.eShopWeb.UnitTests.Web.Controllers
                 Assert.Contains("Cannot generate recovery codes", exception.Message);
             }
 
-            [Fact]
-            public async Task LinkLoginCallback_AddsLogin_WhenValid_IntegrationTest()
-            {
-                // Arrange
-                var loginInfo = new ExternalLoginInfo(
-                    new ClaimsPrincipal(),
-                    "Google",
-                    "google-key",
-                    "Google");
+            
 
-                _mockUserManager.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                    .ReturnsAsync(_testUser);
-                _mockSignInManager.Setup(s => s.GetExternalLoginInfoAsync(_testUser.Id))
-                    .ReturnsAsync(loginInfo);
-                _mockUserManager.Setup(m => m.AddLoginAsync(_testUser, loginInfo))
-                    .ReturnsAsync(IdentityResult.Success);
-
-                var httpContext = new Mock<HttpContext>();
-                //httpContext.Setup(h => h.SignOutAsync(IdentityConstants.ExternalScheme))
-                //    .Returns(Task.CompletedTask);
-                _controller.ControllerContext.HttpContext = httpContext.Object;
-
-                // Act
-                var result = await _controller.LinkLoginCallback();
-
-                // Assert
-                var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-                Assert.Equal("ExternalLogins", redirectResult.ActionName);
-            }
-
-            [Fact]
-            public async Task LinkLoginCallback_ThrowsException_WhenNoExternalLoginInfo_IntegrationTest()
-            {
-                // Arrange
-                _mockUserManager.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                    .ReturnsAsync(_testUser);
-                _mockSignInManager.Setup(s => s.GetExternalLoginInfoAsync(_testUser.Id))
-                    .ReturnsAsync((ExternalLoginInfo)null);
-
-                // Act & Assert
-                var exception = await Assert.ThrowsAsync<ApplicationException>(
-                    () => _controller.LinkLoginCallback());
-                Assert.Contains("Unexpected error occurred loading external login info", exception.Message);
-            }
 
             #endregion
         }
