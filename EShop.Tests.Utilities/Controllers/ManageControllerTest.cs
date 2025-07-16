@@ -870,7 +870,7 @@ namespace Microsoft.eShopWeb.UnitTests.Web.Controllers
 
             var controller = new AccountController(_mockUserManager.Object, null, null, null);
 
-            // Act & Assert
+            // Act & Assert --
             var exception = await Assert.ThrowsAsync<ApplicationException>(
                 () => _controller.EnableAuthenticator());
 
