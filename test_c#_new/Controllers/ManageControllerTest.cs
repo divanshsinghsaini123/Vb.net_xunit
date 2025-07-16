@@ -21,7 +21,7 @@ using Xunit;
 
 namespace test_c__new.Controllers
 {
-    public class ManageControllerTest_Csharp
+    public class ManageControllerTest
     {
         public class ManageControllerAllTests
         {

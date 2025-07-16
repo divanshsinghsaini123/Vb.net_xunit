@@ -219,18 +219,11 @@ Namespace Controllers
             Return View(ExternalLoginsView.CreateNew(model, ViewData), model)
         End Function
 
-        <HttpPost>
-        <ValidateAntiForgeryToken>
-        Public Async Function LinkLogin(ByVal provider As String) As Task(Of IActionResult)
-            Await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme)
-            Dim redirectUrl = Url.Action(NameOf(LinkLoginCallback))
-            Dim properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, _userManager.GetUserId(User))
-            Return New ChallengeResult(provider, properties)
-        End Function
 
         <HttpGet>
         Public Async Function LinkLoginCallback() As Task(Of IActionResult)
             Dim _user = Await _userManager.GetUserAsync(User)
+
 
             If _user Is Nothing Then
                 Throw New ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.")
