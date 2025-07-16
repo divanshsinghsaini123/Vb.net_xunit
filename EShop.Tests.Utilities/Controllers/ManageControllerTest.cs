@@ -19,11 +19,10 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace test_c__new.Controllers
+namespace Microsoft.eShopWeb.UnitTests.Web.Controllers
 {
-    public class ManageControllerTest_Csharp
-    {
-        public class ManageControllerAllTests
+   
+        public class ManageControllerTests
         {
             private readonly Mock<UserManager<ApplicationUser>> _mockUserManager;
             private readonly Mock<SignInManager<ApplicationUser>> _mockSignInManager;
@@ -35,7 +34,7 @@ namespace test_c__new.Controllers
             private readonly ApplicationUser _testUser;
             private readonly ClaimsPrincipal _testPrincipal;
 
-            public ManageControllerAllTests()
+            public ManageControllerTests()
             {
                 // Setup UserManager mock
                 var userStore = new Mock<IUserStore<ApplicationUser>>();
@@ -1828,7 +1827,7 @@ namespace test_c__new.Controllers
 
             #endregion
         }
-    }
+    
 
 }
 
