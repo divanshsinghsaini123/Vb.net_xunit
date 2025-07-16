@@ -860,7 +860,7 @@ namespace Microsoft.eShopWeb.UnitTests.Web.Controllers
         [Fact]
         public async Task EnableAuthenticator_GET_ThrowsException_WhenUserIsNull()
         {
-            // Arrange
+            // Arrange iii
            
             _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync((ApplicationUser)null);
