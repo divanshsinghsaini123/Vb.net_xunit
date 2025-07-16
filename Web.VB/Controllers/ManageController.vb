@@ -295,7 +295,7 @@ Namespace Controllers
         Public Async Function EnableAuthenticator() As Task(Of IActionResult)
             Dim _user = Await _userManager.GetUserAsync(User)
 
-            If User Is Nothing Then
+            If _user Is Nothing Then
                 Throw New ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.")
             End If
 
@@ -322,7 +322,7 @@ Namespace Controllers
 
             Dim _user = Await _userManager.GetUserAsync(User)
 
-            If User Is Nothing Then
+            If _user Is Nothing Then
                 Throw New ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.")
             End If
 
@@ -349,7 +349,7 @@ Namespace Controllers
         Public Async Function ResetAuthenticator() As Task(Of IActionResult)
             Dim _user = Await _userManager.GetUserAsync(User)
 
-            If User Is Nothing Then
+            If _user Is Nothing Then
                 Throw New ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.")
             End If
 

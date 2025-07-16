@@ -833,12 +833,50 @@ namespace Microsoft.eShopWeb.UnitTests.Web.Controllers
                     () => _controller.Disable2fa());
                 Assert.Contains("Unexpected error", exception.Message);
             }
+        [Fact]
+        public async Task Disable2faWarning_ThrowsApplicationException_WhenUserIsNull()
+        {
+            // Arrange
 
-            #endregion
+            _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync((ApplicationUser)null);
 
-            #region EnableAuthenticator Tests
+            _mockUserManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns("test-user-id");
 
-            [Fact]
+            var controller = new AccountController(_mockUserManager.Object, null, null, null);
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<ApplicationException>(
+                () => _controller.Disable2faWarning());
+
+            Assert.Contains("Unable to load user with ID 'test-user-id'", exception.Message);
+        }
+        #endregion
+
+        #region EnableAuthenticator Tests
+
+
+        [Fact]
+        public async Task EnableAuthenticator_GET_ThrowsException_WhenUserIsNull()
+        {
+            // Arrange
+           
+            _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync((ApplicationUser)null);
+
+            _mockUserManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns(_testUser.Id);
+
+            var controller = new AccountController(_mockUserManager.Object, null, null, null);
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<ApplicationException>(
+                () => _controller.EnableAuthenticator());
+
+            Assert.Contains("Unable to load user with ID 'test-user-id'", exception.Message);
+        }
+        [Fact]
             public async Task EnableAuthenticator_Get_ReturnsView_WithCorrectModel()
             {
                 // Arrange
@@ -892,7 +930,26 @@ namespace Microsoft.eShopWeb.UnitTests.Web.Controllers
                 _mockUserManager.Verify(m => m.GetAuthenticatorKeyAsync(_testUser), Times.Exactly(2));
             }
 
-            [Fact]
+        [Fact]
+        public async Task EnableAuthenticator_POST_ThrowsException_WhenUserIsNull()
+        {
+            // Arrange
+
+            _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync((ApplicationUser)null);
+
+            _mockUserManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns(_testUser.Id);
+
+            var model = new EnableAuthenticatorViewModel { Code = "123456" };
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<ApplicationException>(
+                () => _controller.EnableAuthenticator(model));
+
+            Assert.Contains("Unable to load user with ID 'test-user-id'", exception.Message);
+        }
+        [Fact]
             public async Task EnableAuthenticator_Post_ReturnsView_WhenModelStateInvalid()
             {
                 // Arrange
@@ -985,11 +1042,20 @@ namespace Microsoft.eShopWeb.UnitTests.Web.Controllers
                 _mockUserManager.Verify(m => m.VerifyTwoFactorTokenAsync(_testUser, "Authenticator", "123456"), Times.Once);
             }
 
-            #endregion
+        #endregion
 
-            #region ResetAuthenticator Tests
+        #region ResetAuthenticator Tests
+        [Fact]
+        public async Task ResetAuthenticator_ThrowsException_WhenUserIsNull()
+        {
+            // Arrange
+            _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                            .ReturnsAsync((ApplicationUser)null);
+            // Act & Assert
+            await Assert.ThrowsAsync<ApplicationException>(() => _controller.ResetAuthenticator());
+        }
 
-            [Fact]
+        [Fact]
             public void ResetAuthenticatorWarning_ReturnsView()
             {
                 // Act
