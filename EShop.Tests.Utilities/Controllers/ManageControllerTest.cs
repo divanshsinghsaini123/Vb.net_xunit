@@ -65,9 +65,9 @@ namespace Microsoft.eShopWeb.UnitTests.Web.Controllers
 
                 _testPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
                 {
-                new Claim(ClaimTypes.NameIdentifier, _testUser.Id),
-                new Claim(ClaimTypes.Name, _testUser.UserName)
-            }));
+                    new Claim(ClaimTypes.NameIdentifier, _testUser.Id),
+                    new Claim(ClaimTypes.Name, _testUser.UserName)
+                }));
 
                 _controller = new ManageController(
                     _mockUserManager.Object,
